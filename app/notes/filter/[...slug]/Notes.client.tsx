@@ -1,13 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import {
-  useQuery,
-  UseQueryResult,
-  keepPreviousData,
-} from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { fetchNotes, NotesHttpResponse } from "@/lib/api";
-import type { Note } from "@/types/note";
 import { useDebounce } from "@/hooks/useDebouncedValue";
 import SearchBox from "@/components/SearchBox/SearchBox";
 import Pagination from "@/components/Pagination/Pagination";
@@ -19,36 +14,23 @@ import Link from "next/link";
 import css from "./NotesPage.module.css";
 
 interface NotesClientProps {
-  initialNotes: Note[];
-  initialTotalPages: number;
   tag: string;
 }
 
-export default function NotesClient({
-  initialNotes,
-  initialTotalPages,
-  tag,
-}: NotesClientProps) {
+export default function NotesClient({ tag }: NotesClientProps) {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
   const [page, setPage] = useState(1);
 
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-  }: UseQueryResult<NotesHttpResponse, Error> = useQuery({
-    queryKey: ["notes", debouncedSearch, page, tag],
-    queryFn: () => fetchNotes(debouncedSearch, page, tag),
-    initialData: {
-      notes: initialNotes,
-      totalPages: initialTotalPages,
-    },
-    placeholderData: keepPreviousData,
-  });
+  const { data, isLoading, isError, error } = useQuery<NotesHttpResponse, Error>(
+    {
+      queryKey: ["notes", debouncedSearch, page, tag],
+      queryFn: () => fetchNotes(debouncedSearch, page, tag),
+      placeholderData: keepPreviousData,
+    }
+  );
 
-  const notes = data?.notes || [];
+  const notes = data?.notes ?? [];
   const pageCount = data?.totalPages ?? 1;
 
   if (isError && error) throw error;
