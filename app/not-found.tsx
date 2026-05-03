@@ -1,14 +1,11 @@
-"use client";
+import type { Metadata } from "next";
+import NotFoundUseClient from "./not-found-use-client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+export const metadata: Metadata = {
+  title: "404 | Not Found",
+  description: "The requested page could not be found.",
+};
 
-export default function NotFoundUseClient() {
-  const router = useRouter();
-
-  useEffect(() => {
-    const timer = setTimeout(() => router.push("/"), 3000);
-    return () => clearTimeout(timer);
-  }, [router]);
-  return <p>Redirecting you to the notes page in 3 seconds...</p>;
+export default function NotFound() {
+  return <NotFoundUseClient />;
 }
